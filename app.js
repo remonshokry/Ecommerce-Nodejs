@@ -7,10 +7,12 @@ const authJwt = require('./helpers/jwt')
 const errorHandler = require('./helpers/error-handler')
 require('dotenv/config');
 
-app.use(cors());
-app.options('*', cors())
 
 //middleware
+app.use(cors({
+    methods : ['GET','POST','DELETE','UPDATE','PUT','PATCH']
+}));
+app.options('*', cors())
 app.use(express.json());
 app.use(morgan('tiny'));
 app.use(authJwt());
