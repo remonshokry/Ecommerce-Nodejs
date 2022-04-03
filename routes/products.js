@@ -83,7 +83,7 @@ router.get(`/category`, async (req, res) =>{
 })
 //GET PRODUCTS by CATEGORY NAME
 router.get(`/category/:catName`, async (req, res) =>{
-    let productList = await Product.find().populate;
+    let productList = await Product.find().populate('category');
 
     if(!productList) {
         res.status(500).json({success: false})

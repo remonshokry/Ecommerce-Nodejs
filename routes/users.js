@@ -135,7 +135,7 @@ router.post('/login' , async (req , res)=>{
 
 ////get users count
 router.get('/get/count' , async (req , res)=>{
-    const usersCount = await Product.countDocuments();
+    const usersCount = await User.countDocuments();
 
     if(!usersCount && usersCount != 0 ){
         res.status(500).json({success : false})
