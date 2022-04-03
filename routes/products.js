@@ -34,14 +34,6 @@ const storage = multer.diskStorage({
 
 //////////////CUSTOM GET APIs
 //GET NAMES AND IMAGES (EDITING)
-router.get(`/name`, async (req, res) =>{
-    const productList = await Product.find().select('name image -_id');
-
-    if(!productList) {
-        res.status(500).json({success: false})
-    } 
-    res.status(200).send(productList);
-})
 
 //GET PRODUCTS ON SALE
 router.get(`/onsale`, async (req, res) =>{
@@ -67,20 +59,6 @@ router.get(`/onsale/:count`, async (req, res) =>{
 
 ///////// CATEGORY RELATED APIs
 
-//GET ALL PRODUCTS WITH CATEGORY DETAILS
-router.get(`/category`, async (req, res) =>{
-    let filter = {};
-    if(req.query.categories){
-        filter = {category :  req.query.categories.split('+')};
-    }
-
-    const productList = await Product.find(filter).populate('category');
-
-    if(!productList) {
-        res.status(500).json({success: false})
-    } 
-    res.status(200).send(productList);
-})
 //GET PRODUCTS by CATEGORY NAME
 router.get(`/category/:catName`, async (req, res) =>{
     let productList = await Product.find().populate('category');
@@ -95,23 +73,35 @@ router.get(`/category/:catName`, async (req, res) =>{
     }
     return res.status(404).send('NO products in this category');
 })
-//GET PRODUCT by CATEGORY ID
-router.get(`/category/:catId`, async (req, res) =>{
-    if(!mongoose.isValidObjectId(req.params.catId)){
-        res.status(400).send('Invalid category Id');
-    }
-    
-    let productList = await Product.find();
-    if(!productList) {
-        res.status(500).json({success: false})
-    } 
 
-    const filteredProducts =  productList.filter(p => p.category = req.params.catId );
-    if (filteredProducts){
-        return res.status(200).send(filteredProducts);
-    }
-    return res.status(404).send('NO products in this category');
-})
+
+//GET ALL PRODUCTS WITH CATEGORY DETAILS
+// router.get(`/category`, async (req, res) =>{
+//     let filter = {};
+//     if(req.query.categories){
+//         filter = {category :  req.query.categories.split('+')};
+//     }
+
+//     const productList = await Product.find(filter).populate('category');
+
+//     if(!productList) {
+//         res.status(500).json({success: false})
+//     } 
+//     res.status(200).send(productList);
+// })
+
+//GET PRODUCT by CATEGORY ID
+// router.get(`/category/:catId`, async (req, res) =>{
+//     if(!mongoose.isValidObjectId(req.params.catId)){
+//         res.status(400).send('Invalid category Id');
+//     }
+    
+//     let productList = await Product.find({category : req.params.catId});
+//     if (productList){
+//         return res.status(200).send(filteredProducts);
+//     }
+//     return res.status(404).send('NO products in this category');
+// })
 
 
 
