@@ -89,7 +89,7 @@ router.get(`/category/:catName`, async (req, res) =>{
         res.status(500).json({success: false})
     } 
 
-    const filteredProducts =  productList.filter(p => p.category.name = req.params.catName );
+    const filteredProducts =  productList.filter(p => p.category.name == req.params.catName );
     if (filteredProducts){
         return res.status(200).send(filteredProducts);
     }
