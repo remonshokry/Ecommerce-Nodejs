@@ -62,12 +62,19 @@ router.get(`/onsale/:count`, async (req, res) =>{
 //GET PRODUCTS by CATEGORY NAME
 router.get(`/category/:catName`, async (req, res) =>{
     let productList = await Product.find().populate('category');
-
     if(!productList) {
         res.status(500).json({success: false})
     } 
 
-    const filteredProducts =  productList.filter(p => p.category.name == req.params.catName );
+    const filteredProducts =  []
+    productList.forEach(el => {
+        if(el.category?.name == req.params.catName)
+        {
+            filteredProducts.push(el);
+            console.log(el.category.name);
+        }
+    })  
+    
     if (filteredProducts){
         return res.status(200).send(filteredProducts);
     }
