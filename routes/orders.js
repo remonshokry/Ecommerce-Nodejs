@@ -80,7 +80,7 @@ router.put('/:id',async (req, res)=> {
     )
 
     if(!order)
-    return res.status(400).send('the order cannot be update!')
+    return res.status(400).send('The order cannot be update!')
 
     res.send(order);
 })
