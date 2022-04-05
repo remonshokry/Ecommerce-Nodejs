@@ -73,6 +73,7 @@ router.put('/:id',async (req, res)=> {
     const order = await Order.findByIdAndUpdate(
         req.params.id,
         {
+            // 'Approved'
             status: req.body.status
         },
         { new: true}

@@ -109,7 +109,7 @@ router.put('/:id' , async (req , res)=>{
 
 
 //////////////// LOGIN
-
+//api/v1/users/:id
 router.post('/login' , async (req , res)=>{
     const user = await User.findOne({email : req.body.email});
     const secret = process.env.SECRETKEY;
