@@ -44,6 +44,10 @@ const orderSchema = mongoose.Schema({
     dateOrdered:{
         type: Date ,
         default: Date.now
+    },
+    isOnCart :{
+        type: Boolean,
+        default : true
     }
 
 })

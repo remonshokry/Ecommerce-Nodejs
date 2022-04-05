@@ -24,14 +24,14 @@ router.get('/user/:userId' , async (req , res)=>{
 })
 
 
-router.get('/details' , async (req , res)=>{
-    const favList = await Favorite.find().select('-passwordHash').populate('product');
-    if (!favList)
-    {
-        return res.status(401).json({success: false , message: 'Cannot find Favourites'});
-    }
-    return res.status(200).send(favList);
-})
+// router.get('/details' , async (req , res)=>{
+//     const favList = await Favorite.find().select('-passwordHash').populate('product');
+//     if (!favList)
+//     {
+//         return res.status(401).json({success: false , message: 'Cannot find Favourites'});
+//     }
+//     return res.status(200).send(favList);
+// })
 
 
 
@@ -64,13 +64,13 @@ router.delete('/:favId' , async (req , res)=>{
     return res.status(200).send({success : true , message : "favorite Item deleted successfully"});
 })
 
-router.get('/' , async (req , res)=>{
-    const favList = await Favorite.find();
-    if (!favList)
-    {
-        return res.status(401).json({success: false , message: 'Cannot find Favourites'});
-    }
-    return res.status(200).send(favList);
-})
+// router.get('/' , async (req , res)=>{
+//     const favList = await Favorite.find();
+//     if (!favList)
+//     {
+//         return res.status(401).json({success: false , message: 'Cannot find Favourites'});
+//     }
+//     return res.status(200).send(favList);
+// })
 
 module.exports = router;

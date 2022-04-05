@@ -210,7 +210,7 @@ router.put('/:id' , uploadOptions.single('image') , async (req , res)=>{
     }
     
     const oldProduct = await Product.findById(req.params.id);
-    if(!product){
+    if(!oldProduct){
         return res.status(400).send('Invalid Product');
     }
 
@@ -298,7 +298,6 @@ router.put('/gallery/:id' , uploadOptions.array('images' , 10 ) , async (req , r
 
     res.status(200).send(product);
 })
-
 
 
 module.exports = router;
