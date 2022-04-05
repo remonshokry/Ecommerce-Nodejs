@@ -15,15 +15,12 @@ const orderSchema = mongoose.Schema({
     },
     city :{
         type: String,
-        required: true
     },
     zip:{
         type : String ,
-        required: true
     },
     country:{
         type:String,
-        required: true
     },
     phone:{
         type: String,
@@ -44,12 +41,7 @@ const orderSchema = mongoose.Schema({
     dateOrdered:{
         type: Date ,
         default: Date.now
-    },
-    isOnCart :{
-        type: Boolean,
-        default : true
     }
-
 })
 
 exports.Order = mongoose.model('Order', orderSchema);
