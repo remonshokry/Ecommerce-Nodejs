@@ -11,7 +11,7 @@ const jwt = require("jsonwebtoken");
 
 router.get('/' , async(req,res)=>{
     let decodedToken = '';
-    var token = req.headers[process.env.TOKEN];
+    var token = req.headers.authorization.split(' ')[1];
     if (!token)
         return res.status(401).send({ auth: false, message: "No token provided." });
   
@@ -37,7 +37,7 @@ router.get('/' , async(req,res)=>{
 
 router.post('/', async (req,res)=>{
     let decodedToken = '';
-    var token = req.headers[process.env.TOKEN];
+    var token = req.headers.authorization.split(' ')[1];
     if (!token)
         return res.status(401).send({ auth: false, message: "No token provided." });
   
@@ -82,12 +82,12 @@ router.post('/', async (req,res)=>{
         {
             let price = await req.body.quantity * product.price;
             let newCartItem = new Cart({
-                product : req.body.product,
-                price : price,
-                quantity : req.body.quantity,
-                user : decodedToken.userId,
-                size : req.body.size ? req.body.size: ' ',
-                color : req.body.color ? req.body.color: ' '
+                product : req.body.product ,
+                price : price ,
+                quantity : req.body.quantity ,
+                user : decodedToken.userId ,
+                size : req.body.size ? req.body.size: (product.sizes[0]? product.sizes[0] : ' '),
+                color : req.body.color ? req.body.color: (product.colors[0].colorName? product.colors[0].colorName : ' ')
         })
         newCartItem = await newCartItem.save();
         if(!newCartItem){
@@ -101,7 +101,7 @@ router.post('/', async (req,res)=>{
 
 router.get(`/get/count/`, async (req, res) =>{
     let decodedToken = '';
-    var token = req.headers[process.env.TOKEN];
+    var token = req.headers.authorization.split(' ')[1];
     if (!token)
         return res.status(401).send({ auth: false, message: "No token provided." });
   
@@ -187,7 +187,7 @@ router.delete('/:prodId', async (req, res)=>{
         return res.status(400).send('Invalid product Id');
     }
     let decodedToken = '';
-    var token = req.headers[process.env.TOKEN];
+    var token = req.headers.authorization.split(' ')[1];
     if (!token)
         return res.status(401).send({ auth: false, message: "No token provided." });
   

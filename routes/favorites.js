@@ -9,7 +9,7 @@ const mongoose = require('mongoose')
 
 router.get('/' , async (req , res)=>{
     let decodedToken = '';
-    var token = req.headers[process.env.TOKEN];
+    var token = req.headers.authorization.split(' ')[1];
     if (!token)
         return res.status(401).send({ auth: false, message: "No token provided." });
   
@@ -55,7 +55,7 @@ router.get('/' , async (req , res)=>{
 
 router.post('/' , async(req, res)=>{
     let decodedToken = '';
-    var token = req.headers[process.env.TOKEN];
+    var token = req.headers.authorization.split(' ')[1];
     if (!token)
         return res.status(401).send({ auth: false, message: "No token provided." });
   
@@ -93,7 +93,7 @@ router.delete('/:prodId' , async (req , res)=>{
         return res.status(400).send('Invalid product Id');
     }
     let decodedToken = '';
-    var token = req.headers[process.env.TOKEN];
+    var token = req.headers.authorization.split(' ')[1];
     if (!token)
         return res.status(401).send({ auth: false, message: "No token provided." });
   
@@ -118,7 +118,7 @@ router.delete('/:prodId' , async (req , res)=>{
 
 router.delete('/', async (req, res)=>{
     let decodedToken = '';
-    var token = req.headers[process.env.TOKEN];
+    var token = req.headers.authorization.split(' ')[1];
     if (!token)
         return res.status(401).send({ auth: false, message: "No token provided." });
   
