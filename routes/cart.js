@@ -67,8 +67,8 @@ router.post('/', async (req,res)=>{
                 price : price,
                 quantity : req.body.quantity,
                 user : decodedToken.userId,
-                size : req.body.size ? req.body.size: ' ',
-                color : req.body.color ? req.body.color: ' '
+                size : req.body.size ? req.body.size: (product.sizes[0]? product.sizes[0] : ' '),
+                color : req.body.color ? req.body.color: (product.colors[0].colorName? product.colors[0].colorName : ' ')
             },
             {new : true}
             )
