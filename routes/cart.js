@@ -27,7 +27,7 @@ router.get('/' , async(req,res)=>{
     }
     
 
-    const cartItems =  await Cart.find({user: decodedToken.userId}).select('-user -_id');
+    const cartItems =  await Cart.find({user: decodedToken.userId}).select('-user -_id').populate('product');
     if (!cartItems){
         return res.status(401).send("Cart is empty");
     }
