@@ -1,11 +1,12 @@
 const expressJwt = require('express-jwt');
+const mongoose = require('mongoose')
 
 function authJwt() {
     const secret = process.env.SECRETKEY
     return expressJwt({
         secret,
         algorithms:['HS256'],
-        isRevoked : isRevoked
+        // isRevoked : isRevoked
     }).unless({
         path:[
             '/api/v1/users/login',
@@ -18,11 +19,8 @@ function authJwt() {
   }
 
  
-async function isRevoked(req, payLoad , done) {
-    if(!payLoad.isAdmin){
-        done(null , true)
-    }
-    done();
-  }
+// async function isRevoked(req, payLoad , done) {
+//     done();
+//   }
 
   module.exports = authJwt;
