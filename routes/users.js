@@ -161,18 +161,24 @@ router.delete("/:id", (req, res) => {
     });
 });
 
-router.get("/get/me", function (req, res) {
-  var token = req.headers[process.env.TOKEN];
-  if (!token)
-  return res.status(401).send({ auth: false, message: "No token provided." });
+router.get("/get/me", async (req, res) => {
+  let decodedToken = '';
+    var token = req.headers[process.env.TOKEN];
+    if (!token)
+        return res.status(401).send({ auth: false, message: "No token provided." });
   
-  jwt.verify(token, process.env.SECRETKEY , function (err, decoded) {
-    if (err)
-      return res
-        .status(500)
-        .send({ auth: false, message: "Failed to authenticate token." });
-    res.status(200).send(decoded);
+    jwt.verify(token, process.env.SECRETKEY , function (err, decoded) {
+        if (err)
+            return res.status(500).send({ auth: false, message: "Failed to authenticate token." });
+        decodedToken = decoded;
   });
+
+    const user = await User.findById(decodedToken.userId ).select('-passwordHash');
+    if(!user){
+        return res.status(500).send('No user with this Id');
+    }
+    return res.status(200).send(user);
+
 });
 
 module.exports = router;
