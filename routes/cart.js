@@ -57,7 +57,9 @@ router.post('/', async (req,res)=>{
     }
     
     let prevCartItem = await Cart.find({user : decodedToken.userId , product: req.body.product});
-    if(prevCartItem[0])
+    if(prevCartItem[0] && 
+        prevCartItem[0].color === req.body.color &&
+        prevCartItem[0].size === req.body.size)
     {
         let price = await req.body.quantity * product.price;
         const updatedCartItem = await Cart.findByIdAndUpdate(
