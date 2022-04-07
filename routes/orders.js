@@ -31,10 +31,13 @@ router.post('/', async (req,res)=>{
     const orderItemsIds = Promise.all(req.body.orderItems.map(async (orderItem) =>{
         let newOrderItem = new OrderItem({
             quantity: orderItem.quantity,
-            product: orderItem.product
+            product: orderItem.product,
+            color : orderItem.color,
+            size: orderItem.size
         })
-
+        
         newOrderItem = await newOrderItem.save();
+        console.log(newOrderItem);
 
         return newOrderItem._id;
     }))
@@ -69,21 +72,21 @@ router.post('/', async (req,res)=>{
 })
 
 
-router.put('/:id',async (req, res)=> {
-    const order = await Order.findByIdAndUpdate(
-        req.params.id,
-        {
-            // 'Approved'
-            status: req.body.status
-        },
-        { new: true}
-    )
+// router.put('/:id',async (req, res)=> {
+//     const order = await Order.findByIdAndUpdate(
+//         req.params.id,
+//         {
+//             // 'Approved'
+//             status: req.body.status
+//         },
+//         { new: true}
+//     )
 
-    if(!order)
-    return res.status(400).send('The order cannot be update!')
+//     if(!order)
+//     return res.status(400).send('The order cannot be update!')
 
-    res.send(order);
-})
+//     res.send(order);
+// })
 
 
 router.delete('/:id', (req, res)=>{

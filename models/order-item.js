@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { stringify } = require('nodemon/lib/utils');
 
 const orderItemSchema = mongoose.Schema({
     quantity: {
@@ -9,6 +10,14 @@ const orderItemSchema = mongoose.Schema({
         type : mongoose.Schema.Types.ObjectId,
         ref: 'Product',
         required : true
+    },
+    color:{
+        type: String,
+        default: ' '
+    },
+    size:{
+        type: String,
+        default: ' '
     }
 })
 
