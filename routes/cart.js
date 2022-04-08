@@ -141,12 +141,13 @@ router.get(`/get/count/`, async (req, res) =>{
     if(!user){
         return res.status(500).send('No user with this Id');
     }
+    const userCart = await Cart.find({user: decodedToken.userId});
 
     let cartCount = 0;
-    cartCount = await Cart.find({user: decodedToken.userId}).countDocuments();
-
+    userCart.forEach((el)=>{
+        cartCount += el.quantity;
+    })
     let totalPrice = 0;
-    const userCart = await Cart.find({user: decodedToken.userId});
     userCart.forEach((el)=>{
         totalPrice += el.price;
     })
