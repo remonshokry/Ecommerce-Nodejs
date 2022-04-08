@@ -18,6 +18,10 @@ const orderItemSchema = mongoose.Schema({
     size:{
         type: String,
         default: ' '
+    },
+    price:{
+        type: Number,
+        default :0
     }
 })
 
