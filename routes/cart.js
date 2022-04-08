@@ -71,62 +71,58 @@ router.post('/', async (req,res)=>{
     if(product?.colors)
         color = product.colors[0];
 
-    if (req.body.color){
-        color = req.body.color
-    }
-
-
-    let addedFlag = 0;
-    let newCartItem;
-    let updatedCartItem;
+        if (req.body.color){
+            color = req.body.color
+        }
+        
+        
+    let cartItemId ;
     let prevCartItems = await Cart.find({user : decodedToken.userId , product: req.body.product});
     prevCartItems.forEach(async (prevCartItem)=>{
-        if(!addedFlag)
-        {
-            if(prevCartItem && 
-                prevCartItem.color == req.body.color &&
-                prevCartItem.size == req.body.size)
+        if(prevCartItem && 
+            prevCartItem.color == req.body.color &&
+            prevCartItem.size == req.body.size)
             {
-                addedFlag = 1;
-                let price = await req.body.quantity * product.price;
-                newCartItem = await Cart.findByIdAndUpdate(
-                    prevCartItem._id,
-                    {
-                        product : req.body.product,
-                        price : price,
-                        quantity : req.body.quantity,
-                        user : decodedToken.userId,
-                        size : req.body.size ? req.body.size: (product.sizes[0]? product.sizes[0] : ' '),
-                        color : req.body.color ? req.body.color: (product.colors[0].colorName? product.colors[0].colorName : ' ')
-                    },
-                    {new : true}
-                    )
-                    // if(!updatedCartItem)
-                    // {
-                        //     return res.status(505).send("unable to update cart");
-                    // }
-                    // return res.status(200).send(updatedCartItem);
-                }
-                else
-                {
-                    addedFlag = 1;
-                    newCartItem = new Cart({
-                        product : req.body.product ,
-                        price : price ,
-                        quantity : req.body.quantity ,
-                        user : decodedToken.userId ,
-                        size : size,
-                        color : color
-                })
-                newCartItem = await newCartItem.save();
+                cartItemId = prevCartItem._id;
             }
-        }   
     })
 
-    if(!newCartItem ){
-        return res.status(505).send("Cannot add item to cart")
-    }
-        return res.status(200).send(newCartItem);
+    if(cartItemId){
+        let price = await req.body.quantity * product.price;
+        const updatedCartItem =  CartItem = await Cart.findByIdAndUpdate(
+            cartItemId,
+            {
+                product : req.body.product,
+                price : price,
+                quantity : req.body.quantity,
+                user : decodedToken.userId,
+                size : size,
+                color : color
+            },
+            {new : true}
+            )
+            if(!updatedCartItem)
+            {
+                    return res.status(505).send("unable to update cart");
+            }
+            return res.status(200).send(updatedCartItem);
+        }
+        else{
+            let newCartItem = new Cart({
+                    product : req.body.product ,
+                    price : price ,
+                    quantity : req.body.quantity ,
+                    user : decodedToken.userId ,
+                    size : size,
+                    color : color
+            })
+        newCartItem = await newCartItem.save();
+        if(!newCartItem ){
+            return res.status(505).send("Cannot add item to cart")
+        }
+            return res.status(200).send(newCartItem);
+        }   
+
 }) 
 
 router.get(`/get/count/`, async (req, res) =>{
@@ -212,7 +208,7 @@ router.get(`/get/count/`, async (req, res) =>{
 
 
 
-router.delete('/:prodId', async (req, res)=>{
+router.delete('/product/:prodId', async (req, res)=>{
     if (!mongoose.isValidObjectId(req.params.prodId)){
         return res.status(400).send('Invalid product Id');
     }
@@ -233,26 +229,31 @@ router.delete('/:prodId', async (req, res)=>{
     }
     const userOrdersFromProduct = await Cart.find({user : decodedToken.userId , product: req.params.prodId })
     
-    if(userOrdersFromProduct)
+    if(!userOrdersFromProduct)
     {
         return res.status(505).send('No Items from this products')
     }
-    let cartItem;
+    let cartItemId;
     userOrdersFromProduct.forEach(async (el)=>{
         if(el.size === req.body.size && el.color === req.body.color)
         {
-            cartItem = await Cart.findOneAndDelete(el._id);
+            cartItemId = el._id;
         }
     })
-    if(!cartItem){
+    if(!cartItemId){
         return res.status(505).send('Cannot Find This product');
     }
+    const deletedItem = await Cart.findByIdAndDelete(cartItemId);
+    if(!deletedItem){
+        return res.status(506).send('Cannot Find This product');
+    }
+
     return res.status(200).send('the item deleted successfully');
 })
 
 router.delete('/', async (req, res)=>{
     let decodedToken = '';
-    var token = req.headers[process.env.TOKEN];
+    var token = req.headers.authorization.split(' ')[1];
     if (!token)
         return res.status(401).send({ auth: false, message: "No token provided." });
   
