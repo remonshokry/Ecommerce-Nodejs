@@ -49,6 +49,19 @@ router.get("/:id", async (req, res) => {
 
 // register
 router.post("/register", async (req, res) => {
+  
+  let foundFlag = 0 ;
+  const usersList = await User.find();
+  usersList.forEach(user =>{
+    if(user.email === req.body.email){
+      foundFlag = 1;
+    }
+  })
+  
+if(foundFlag){
+  return res.status(505).send('Email Already Exists');
+}
+
   let newUser = new User({
     name: req.body.name,
     email: req.body.email,
@@ -82,6 +95,22 @@ router.put("/:id", async (req, res) => {
     newPasswordHash = bcrypt.hashSync(req.body.password, 10);
   } else {
     newPasswordHash = userExist.passwordHash;
+  }
+
+  let foundFlag = 0 ;
+  const usersList = await User.find();
+  usersList.forEach(user =>{
+    if(user.email === req.body.email){
+      if(userExist.email !== req.body.email ){
+        foundFlag = 1;
+      }
+    }
+  })
+
+  
+  
+  if(foundFlag){
+    return res.status(505).send('Email Already Exists');
   }
 
   const user = await User.findByIdAndUpdate(
