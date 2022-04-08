@@ -69,7 +69,7 @@ router.post('/', async (req,res)=>{
     let color ;
 
     if(product?.colors)
-        color = product.colors[0];
+        color = product.colors[0].colorName;
 
         if (req.body.color){
             color = req.body.color
