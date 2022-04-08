@@ -55,50 +55,78 @@ router.post('/', async (req,res)=>{
     if(!product){
         return res.status(401).send('No Product with this Id');
     }
-    
-    let prevCartItem = await Cart.find({user : decodedToken.userId , product: req.body.product});
-    if(prevCartItem[0] && 
-        prevCartItem[0].color === req.body.color &&
-        prevCartItem[0].size === req.body.size)
-    {
-        let price = await req.body.quantity * product.price;
-        const updatedCartItem = await Cart.findByIdAndUpdate(
-            prevCartItem[0]._id,
-            {
-                product : req.body.product,
-                price : price,
-                quantity : req.body.quantity,
-                user : decodedToken.userId,
-                size : req.body.size ? req.body.size: (product.sizes[0]? product.sizes[0] : ' '),
-                color : req.body.color ? req.body.color: (product.colors[0].colorName? product.colors[0].colorName : ' ')
-            },
-            {new : true}
-            )
-            if(!updatedCartItem)
-            {
-                return res.status(505).send("unable to update cart");
-            }
-            return res.status(200).send(updatedCartItem);
-        }
-        else
-        {
-            let price = await req.body.quantity * product.price;
-            let newCartItem = new Cart({
-                product : req.body.product ,
-                price : price ,
-                quantity : req.body.quantity ,
-                user : decodedToken.userId ,
-                size : req.body.size ? req.body.size: (product.sizes[0]? product.sizes[0] : ' '),
-                color : req.body.color ? req.body.color: (product.colors[0].colorName? product.colors[0].colorName : ' ')
-        })
-        newCartItem = await newCartItem.save();
-        if(!newCartItem){
-            return res.status(505).send("Cannot add item to cart")
-        }
-        return res.status(200).send(newCartItem);
+    let price = await req.body.quantity * product.price;
+                
+    let size ;
 
+    if(product?.sizes)
+        size = product.sizes[0];
+        
+    if (req.body.size){
+        size = req.body.size
     }
 
+    let color ;
+
+    if(product?.colors)
+        color = product.colors[0];
+
+    if (req.body.color){
+        color = req.body.color
+    }
+
+
+    let addedFlag = 0;
+    let newCartItem;
+    let updatedCartItem;
+    let prevCartItems = await Cart.find({user : decodedToken.userId , product: req.body.product});
+    prevCartItems.forEach(async (prevCartItem)=>{
+        if(!addedFlag)
+        {
+            if(prevCartItem && 
+                prevCartItem.color == req.body.color &&
+                prevCartItem.size == req.body.size)
+            {
+                addedFlag = 1;
+                let price = await req.body.quantity * product.price;
+                newCartItem = await Cart.findByIdAndUpdate(
+                    prevCartItem._id,
+                    {
+                        product : req.body.product,
+                        price : price,
+                        quantity : req.body.quantity,
+                        user : decodedToken.userId,
+                        size : req.body.size ? req.body.size: (product.sizes[0]? product.sizes[0] : ' '),
+                        color : req.body.color ? req.body.color: (product.colors[0].colorName? product.colors[0].colorName : ' ')
+                    },
+                    {new : true}
+                    )
+                    // if(!updatedCartItem)
+                    // {
+                        //     return res.status(505).send("unable to update cart");
+                    // }
+                    // return res.status(200).send(updatedCartItem);
+                }
+                else
+                {
+                    addedFlag = 1;
+                    newCartItem = new Cart({
+                        product : req.body.product ,
+                        price : price ,
+                        quantity : req.body.quantity ,
+                        user : decodedToken.userId ,
+                        size : size,
+                        color : color
+                })
+                newCartItem = await newCartItem.save();
+            }
+        }   
+    })
+
+    if(!newCartItem ){
+        return res.status(505).send("Cannot add item to cart")
+    }
+        return res.status(200).send(newCartItem);
 }) 
 
 router.get(`/get/count/`, async (req, res) =>{
@@ -203,8 +231,19 @@ router.delete('/:prodId', async (req, res)=>{
     if(!user){
         return res.status(500).send('No user with this Id');
     }
-
-    const cartItem = await Cart.findOneAndDelete({ user :decodedToken.userId , product : req.params.prodId});
+    const userOrdersFromProduct = await Cart.find({user : decodedToken.userId , product: req.params.prodId })
+    
+    if(userOrdersFromProduct)
+    {
+        return res.status(505).send('No Items from this products')
+    }
+    let cartItem;
+    userOrdersFromProduct.forEach(async (el)=>{
+        if(el.size === req.body.size && el.color === req.body.color)
+        {
+            cartItem = await Cart.findOneAndDelete(el._id);
+        }
+    })
     if(!cartItem){
         return res.status(505).send('Cannot Find This product');
     }
